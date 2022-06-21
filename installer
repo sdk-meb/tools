@@ -1,0 +1,44 @@
+#!/bin/bash
+
+
+GREEN='\033[1;32m'
+NC='\033[0m'
+
+ls ~/goinfre/homebrew &> /dev/null
+LS=$?
+
+echo $PATH | egrep "homebrew" > /dev/null
+GREP=$?
+
+if [ $LS -eq 0 ] && [ $GREP -eq 0 ]
+then
+	echo "brew is already installed"
+fi
+
+echo "export PATH=$HOME/goinfre/homebrew/bin:$PATH" >> ~/.zshrc
+
+
+if [ $LS -ne 0 ]
+then
+	printf "$GREEN instaling Brew ... $NC "
+	mkdir ~/goinfre/homebrew > /dev/null 2>&1
+	curl --silent -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C ~/goinfre/homebrew > /dev/null 2>&1
+	if [ $? -ne 0 ]
+	then
+		printf " ----> X"
+	else
+		printf "$GREEN ----> √ $NC\n"
+	fi
+		
+fi
+export PATH="$HOME/goinfre/homebrew/bin:$PATH"
+printf "$GREEN instaling Valgrind ... \n$NC""might take a while $NC \n"
+brew tap LouisBrunner/valgrind > /dev/null 2>&1
+brew install --HEAD LouisBrunner/valgrind/valgrind
+if [ $? -ne 0 ]
+then
+	printf "ERROR"
+else
+	printf "$GREEN valgrind installed successfully √$NC\n"
+fi
+exec zsh
